@@ -1,10 +1,134 @@
 
+# 测试
+
 ```bash
 go build -o todoList.exe .\main.go
 ```
 
 ![img01](./assets/img.png)
 
+
+
+---
+
+# cmd命令行便捷使用
+
+
+你的命令行工具项目已经具备了任务管理的基本功能，为了让其更方便使用，可以通过以下步骤进行部署和优化：
+
+---
+
+### **一、编译生成可执行文件**
+使用 `go build` 命令生成可执行文件，建议通过 `-o` 参数自定义名称：
+```bash
+go build -o todo  # 生成名为 todo（Linux/Mac）或 todo.exe（Windows）
+```
+
+---
+
+### **二、将可执行文件加入系统路径**
+#### **1. 方法一：直接移动文件**
+- **Linux/Mac**：将可执行文件复制到 `/usr/local/bin`：
+  ```bash
+  sudo cp todo /usr/local/bin/
+  ```
+- **Windows**：将文件放入系统路径（如 `C:\Windows\system32`）。
+
+#### **2. 方法二：添加当前目录到 PATH**
+- **Linux/Mac**：在 `~/.bashrc` 或 `~/.zshrc` 中添加：
+  ```bash
+  export PATH=$PATH:/path/to/your/project
+  ```
+- **Windows**：通过系统属性 > 环境变量 > 编辑 PATH，添加项目目录。
+
+**完成后，可在任意终端直接运行 `todo` 命令**。
+
+---
+
+### **三、优化命令别名（可选）**
+若需更简短的命令名（如 `td`），可创建软链接：
+```bash
+# Linux/Mac
+ln -s /path/to/todo /usr/local/bin/td
+
+# Windows（以管理员身份运行 cmd）
+mklink C:\Windows\system32\td.exe C:\path\to\todo.exe
+```
+
+---
+
+### **四、验证安装效果**
+```bash
+todo -add "学习Go语言"   # 添加任务
+todo -list              # 查看未完成任务
+todo -all               # 查看所有任务
+```
+
+---
+
+### **五、进阶部署方案**
+#### **1. 跨平台编译**
+为不同系统生成可执行文件：
+```bash
+# Windows
+GOOS=windows GOARCH=amd64 go build -o todo.exe
+
+# Linux
+GOOS=linux GOARCH=amd64 go build -o todo
+
+# Mac
+GOOS=darwin GOARCH=arm64 go build -o todo
+```
+
+#### **2. 发布到包管理器**
+- **Mac**：通过 Homebrew 发布自定义 Formula。
+- **Linux**：打包为 `.deb` 或 `.rpm`。
+- **Windows**：使用 Scoop 创建 Manifest 文件。
+
+---
+
+### **六、代码优化建议**
+1. **修复潜在拼写错误**：  
+   检查 `printTask` 函数中 `v[3] == "false"` 是否正确（当前代码无误，但需注意逻辑）。
+2. **增强健壮性**：  
+   在 `doneTask` 和 `deleteTask` 中添加 ID 越界检查，例如：
+   ```go
+   if doneTaskID <= 0 || doneTaskID > len(list) {
+       fmt.Println("error: 任务ID无效")
+       return
+   }
+   ```
+
+---
+
+### **七、使用示例**
+```bash
+# 添加任务
+todo -add "阅读文档"
+todo -add "编写测试用例"
+
+# 标记任务完成
+todo -done 1
+
+# 删除任务
+todo -del 2
+
+# 查看未完成任务
+todo -list
+
+# 查看所有任务（包括已完成/删除）
+todo -all
+```
+
+---
+
+通过上述步骤，你的工具可以像系统命令一样全局调用。
+
+
+
+---
+
+# 项目详情
 
 ```go
 var addTaskTitle string // 添加任务的内容
