@@ -7,6 +7,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"io"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -28,6 +29,8 @@ var doneTaskID int      // 完成任务的ID
 var deleteTaskID int    // 删除任务的ID
 var islistTask bool     // 是否查看未完成任务
 var islistAllTask bool  // 是否查看所有任务
+// 新增一个查看路径的 flag
+var showPath bool
 
 func init() {
 	flag.StringVar(&addTaskTitle, "add", "", "添加代办任务")
@@ -35,6 +38,7 @@ func init() {
 	flag.IntVar(&deleteTaskID, "del", 0, "删除待办任务")
 	flag.BoolVar(&islistTask, "list", false, "查看未完成任务")
 	flag.BoolVar(&islistAllTask, "all", false, "查看所有任务")
+	flag.BoolVar(&showPath, "path", false, "显示任务文件路径")
 	flag.Parse()
 
 }
@@ -168,6 +172,17 @@ func printTask(isAll bool, list todoList) {
 	table.Render()
 }
 
+// 新增路径显示函数
+func showFilePath() {
+	currentDir, err := os.Getwd() // 获取当前工作目录
+	if err != nil {
+		fmt.Println("获取路径失败:", err)
+		return
+	}
+	filePath := filepath.Join(currentDir, TASKS_FILE_NAME) // 拼接完整路径
+	fmt.Printf("任务文件路径: %s\n", filePath)
+}
+
 func main() {
 	list, err := loadData()
 	if err != nil {
@@ -185,6 +200,8 @@ func main() {
 		addTask(list)
 	case deleteTaskID != 0:
 		deleteTask(list)
+	case showPath:
+		showFilePath()
 	}
 
 }
